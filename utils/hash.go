@@ -8,3 +8,7 @@ func HashPassword(pw string) string {
 
 	return string(b)
 }
+
+func ComparePassword(hash, pw string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(pw))
+}

@@ -36,3 +36,25 @@ func (u User) Save() error {
 	return nil
 
 }
+
+func (u User) ValidateCreds() error {
+
+	query := "SELECT password FROM users WHERE email = ?"
+	row := database.DB.QueryRow(query, u.Email)
+
+	var retrievedPW string
+
+	err := row.Scan(&retrievedPW)
+
+	if err != nil {
+		return err
+	}
+
+	err = utils.ComparePassword(retrievedPW, u.Password)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
