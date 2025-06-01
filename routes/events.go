@@ -2,6 +2,7 @@ package routes
 
 import (
 	"awesomeProject/models"
+	"awesomeProject/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -32,9 +33,22 @@ func getEvents(context *gin.Context) {
 }
 
 func createEvent(context *gin.Context) {
-	var event models.Event
-	err := context.ShouldBindJSON(&event)
 
+	token := context.Request.Header.Get("Authorization")
+
+	if token == "" {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+		return
+	}
+
+	err := utils.VerifyToken(token)
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+		return
+	}
+
+	var event models.Event
+	err = context.ShouldBindJSON(&event)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err)
 		return
@@ -48,7 +62,6 @@ func createEvent(context *gin.Context) {
 		context.JSON(http.StatusInternalServerError, err)
 		return
 	}
-
 	context.JSON(http.StatusCreated, event)
 }
 
