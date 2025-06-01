@@ -2,6 +2,7 @@ package routes
 
 import (
 	"awesomeProject/models"
+	"awesomeProject/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -38,6 +39,14 @@ func login(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, err)
 		return
 	}
-	context.JSON(http.StatusOK, gin.H{"message": "Logged in"})
+
+	token, err := utils.GenerateToken(user.Email, user.ID)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "Logged in", "token": token})
 
 }

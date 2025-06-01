@@ -39,12 +39,12 @@ func (u User) Save() error {
 
 func (u User) ValidateCreds() error {
 
-	query := "SELECT password FROM users WHERE email = ?"
+	query := "SELECT id, password FROM users WHERE email = ?"
 	row := database.DB.QueryRow(query, u.Email)
 
 	var retrievedPW string
 
-	err := row.Scan(&retrievedPW)
+	err := row.Scan(u.ID, &retrievedPW)
 
 	if err != nil {
 		return err
