@@ -27,20 +27,29 @@ func GenerateToken(email string, userId int64) (string, error) {
 
 }
 
-func VerifyToken(token string) error {
+func VerifyToken(token string) (int64, error) {
 	parsedToken, err := jwt.Parse(token, keyFunc)
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	isValid := parsedToken.Valid
 
 	if !isValid {
-		return errors.New("Invalid token")
+		return 0, errors.New("Invalid token")
 	}
 
-	return nil
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+
+	if !ok {
+		return 0, errors.New("Invalid token")
+	}
+
+	email := claims["email"].(string)
+	userId := claims["userId"].(int64)
+
+	return userId, nil
 
 }
 
