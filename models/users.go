@@ -37,7 +37,7 @@ func (u User) Save() error {
 
 }
 
-func (u User) ValidateCreds() error {
+func (u *User) ValidateCreds() error {
 
 	query := "SELECT id, password FROM users WHERE email = ?"
 	row := database.DB.QueryRow(query, u.Email)
