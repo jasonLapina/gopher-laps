@@ -58,9 +58,15 @@ func updateEvent(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, err)
 		return
 	}
-	_, err = models.GetEventByID(eventId)
+	event, err := models.GetEventByID(eventId)
+
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	if event.UserID != context.GetInt64("userId") {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return
 	}
 
@@ -87,8 +93,14 @@ func deleteEvent(context *gin.Context) {
 	eventId, _ := strconv.ParseInt(context.Param("id"), 10, 64)
 
 	event, err := models.GetEventByID(eventId)
+
 	if err != nil {
 		context.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	if event.UserID != context.GetInt64("userId") {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
 		return
 	}
 
